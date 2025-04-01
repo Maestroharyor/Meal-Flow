@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 import {
   Button,
@@ -19,6 +20,7 @@ type GroceryItem = {
   quantity: string;
   category: string;
   isChecked: boolean;
+  date: string; // Format: "YYYY-MM-DD"
 };
 
 type Category = {
@@ -44,6 +46,7 @@ const INITIAL_ITEMS: GroceryItem[] = [
     price: '5.99',
     category: categories.PRODUCE,
     isChecked: false,
+    date: '2025-04-01',
   },
 ];
 
@@ -112,7 +115,7 @@ function AddItemButton({ onPress }: { onPress: () => void }) {
       <Button
         testID="add-item-button"
         onPress={onPress}
-        className="rounded-xl bg-primary-500"
+        className="h-[44px] rounded-xl bg-primary-500"
         label="Add Item"
       />
     </View>
@@ -551,7 +554,7 @@ function useMonthYearSelector(existingMonths: string[]) {
   const currentMonth = MONTHS[new Date().getMonth()];
 
   const years = Array.from({ length: 5 }, (_, i) =>
-    (new Date().getFullYear() - 2 + i).toString()
+    (new Date().getFullYear() + i).toString()
   );
 
   const fullMonthString = `${selectedMonth} ${selectedYear}`;
@@ -607,10 +610,12 @@ function AddMonthModalContent({
 
       {monthExists && <MonthExistsError monthName={fullMonthString} />}
 
-      <View className="mt-4">
+      <View className="mt-6">
         <Button
           onPress={onAddMonth}
-          className={`rounded-lg py-3 ${monthExists ? 'bg-gray-400' : 'bg-primary-500'}`}
+          className={`h-[44px] rounded-xl ${
+            monthExists ? 'bg-gray-400' : 'bg-primary-500'
+          }`}
           label={`Add ${selectedMonth} ${selectedYear}`}
           disabled={monthExists}
         />
@@ -843,10 +848,7 @@ function FormInput({
   return (
     <View>
       <Text className="mb-1 text-sm font-medium text-gray-700">{label}</Text>
-      <TextInput
-        {...props}
-        className="rounded-lg border border-gray-300 px-4 py-2"
-      />
+      <TextInput {...props} className="rounded-lg border border-gray-300 p-4" />
     </View>
   );
 }
@@ -895,7 +897,7 @@ function FormFields({
   onChangeCategory: (category: string) => void;
 }) {
   return (
-    <View className="space-y-4">
+    <View className="flex gap-5">
       <FormInput
         label="Item Name"
         placeholder="Item name"
@@ -929,41 +931,77 @@ function FormActions({
   isEditing: boolean;
 }) {
   return (
-    <View className="mt-4">
+    <View className="mt-6">
       <Button
         testID="submit-form-button"
         onPress={onSubmit}
-        className="rounded-xl bg-primary-500 py-3"
+        className="h-[44px] rounded-xl bg-primary-500"
         label={isEditing ? 'Update Item' : 'Add Item'}
       />
     </View>
   );
 }
 
-function useFormState(initialData?: GroceryItem) {
-  const [name, setName] = useState(initialData?.name ?? '');
-  const [quantity, setQuantity] = useState(initialData?.quantity ?? '');
-  const [price, setPrice] = useState(initialData?.price ?? '');
-  const [category, setCategory] = useState(
-    initialData?.category ?? CATEGORIES[0].name
+function GroceryFormContent({
+  name,
+  quantity,
+  price,
+  category,
+  isEditing,
+  onChangeName,
+  onChangeQuantity,
+  onChangePrice,
+  onChangeCategory,
+  onSubmit,
+}: {
+  name: string;
+  quantity: string;
+  price: string;
+  category: string;
+  isEditing: boolean;
+  onChangeName: (text: string) => void;
+  onChangeQuantity: (text: string) => void;
+  onChangePrice: (text: string) => void;
+  onChangeCategory: (category: string) => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <View className="flex-1 px-4">
+      <FormFields
+        name={name}
+        quantity={quantity}
+        price={price}
+        category={category}
+        onChangeName={onChangeName}
+        onChangeQuantity={onChangeQuantity}
+        onChangePrice={onChangePrice}
+        onChangeCategory={onChangeCategory}
+      />
+
+      <FormActions onSubmit={onSubmit} isEditing={isEditing} />
+    </View>
   );
+}
 
-  // When initialData changes, update form values
+function useGroceryForm(initialItem?: GroceryItem, isEditing = false) {
+  const [name, setName] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [price, setPrice] = useState('');
+  const [category, setCategory] = useState('');
+
   useEffect(() => {
-    if (initialData) {
-      setName(initialData.name);
-      setQuantity(initialData.quantity);
-      setPrice(initialData.price || '');
-      setCategory(initialData.category);
+    if (isEditing && initialItem) {
+      setName(initialItem.name);
+      setQuantity(initialItem.quantity);
+      setPrice(initialItem.price || '');
+      setCategory(initialItem.category);
+    } else {
+      setName('');
+      setQuantity('');
+      setPrice('');
+      setCategory('');
     }
-  }, [initialData]);
-
-  const resetForm = () => {
-    setName('');
-    setQuantity('');
-    setPrice('');
-    setCategory(CATEGORIES[0].name);
-  };
+  }, [isEditing, initialItem]);
 
   return {
     name,
@@ -974,7 +1012,6 @@ function useFormState(initialData?: GroceryItem) {
     setPrice,
     category,
     setCategory,
-    resetForm,
   };
 }
 
@@ -982,13 +1019,16 @@ function GroceryFormSheet({
   isVisible,
   onClose,
   onSubmit,
-  initialData,
+  initialItem,
+  isEditing,
 }: {
   isVisible: boolean;
   onClose: () => void;
-  onSubmit: (item: Omit<GroceryItem, 'id' | 'isChecked'>) => void;
-  initialData?: GroceryItem;
+  onSubmit: (item: Omit<GroceryItem, 'id' | 'isChecked' | 'date'>) => void;
+  initialItem?: GroceryItem;
+  isEditing: boolean;
 }) {
+  const { ref, present, dismiss } = useModal();
   const {
     name,
     setName,
@@ -998,12 +1038,8 @@ function GroceryFormSheet({
     setPrice,
     category,
     setCategory,
-    resetForm,
-  } = useFormState(initialData);
+  } = useGroceryForm(initialItem, isEditing);
 
-  const { ref, present, dismiss } = useModal();
-
-  // Control visibility
   useEffect(() => {
     if (isVisible) {
       present();
@@ -1013,10 +1049,12 @@ function GroceryFormSheet({
   }, [isVisible, present, dismiss]);
 
   const handleSubmit = () => {
-    if (!name || !quantity || !category) return;
-
-    onSubmit({ name, quantity, price, category });
-    resetForm();
+    onSubmit({
+      name,
+      quantity,
+      price,
+      category,
+    });
     onClose();
   };
 
@@ -1025,21 +1063,20 @@ function GroceryFormSheet({
       ref={ref}
       onDismiss={onClose}
       snapPoints={['60%']}
-      title={initialData ? 'Edit Item' : 'Add New Item'}
+      title={isEditing ? 'Edit Grocery Item' : 'Add Grocery Item'}
     >
-      <View className="flex-1 p-4">
-        <FormFields
-          name={name}
-          quantity={quantity}
-          price={price}
-          category={category}
-          onChangeName={setName}
-          onChangeQuantity={setQuantity}
-          onChangePrice={setPrice}
-          onChangeCategory={setCategory}
-        />
-        <FormActions onSubmit={handleSubmit} isEditing={!!initialData} />
-      </View>
+      <GroceryFormContent
+        name={name}
+        quantity={quantity}
+        price={price}
+        category={category}
+        isEditing={isEditing}
+        onChangeName={setName}
+        onChangeQuantity={setQuantity}
+        onChangePrice={setPrice}
+        onChangeCategory={setCategory}
+        onSubmit={handleSubmit}
+      />
     </Modal>
   );
 }
@@ -1048,13 +1085,14 @@ function useGroceryItems() {
   const [items, setItems] = useState<GroceryItem[]>(INITIAL_ITEMS);
 
   const handleAddItem = useCallback(
-    (newItem: Omit<GroceryItem, 'id' | 'isChecked'>) => {
+    (newItem: Omit<GroceryItem, 'id' | 'isChecked' | 'date'>) => {
       setItems((prev) => [
         ...prev,
         {
           ...newItem,
           id: Math.random().toString(),
           isChecked: false,
+          date: formatDate(new Date()),
         },
       ]);
     },
@@ -1064,7 +1102,7 @@ function useGroceryItems() {
   const handleEditItem = useCallback(
     (
       editingItem: GroceryItem,
-      updatedItem: Omit<GroceryItem, 'id' | 'isChecked'>
+      updatedItem: Omit<GroceryItem, 'id' | 'isChecked' | 'date'>
     ) => {
       setItems((prev) =>
         prev.map((item) =>
@@ -1072,6 +1110,7 @@ function useGroceryItems() {
             ? {
                 ...item,
                 ...updatedItem,
+                date: item.date, // Preserve the original date
               }
             : item
         )
@@ -1106,35 +1145,100 @@ function useGroceryItems() {
   };
 }
 
-// Split out the content section to reduce the main component's line count
+// Add helper functions for date handling
+function formatDate(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
+function getMonthFromDate(dateString: string): string {
+  const date = new Date(dateString);
+  return `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+function isSameMonth(dateString: string, selectedMonth: string): boolean {
+  return getMonthFromDate(dateString) === selectedMonth;
+}
+
+// Add EmptyState component after the GrocerySummary component
+function EmptyState() {
+  return (
+    <View className="flex-1 items-center justify-center px-4 pb-20">
+      <View className="mb-6">
+        <Svg width={200} height={200} viewBox="0 0 200 200" fill="none">
+          <Path
+            d="M100 20C55.8172 20 20 55.8172 20 100C20 144.183 55.8172 180 100 180C144.183 180 180 144.183 180 100C180 55.8172 144.183 20 100 20ZM100 160C66.8629 160 40 133.137 40 100C40 66.8629 66.8629 40 100 40C133.137 40 160 66.8629 160 100C160 133.137 133.137 160 100 160Z"
+            fill="#E5E7EB"
+          />
+          <Path
+            d="M100 60C77.9086 60 60 77.9086 60 100C60 122.091 77.9086 140 100 140C122.091 140 140 122.091 140 100C140 77.9086 122.091 60 100 60ZM100 120C88.9543 120 80 111.046 80 100C80 88.9543 88.9543 80 100 80C111.046 80 120 88.9543 120 100C120 111.046 111.046 120 100 120Z"
+            fill="#D1D5DB"
+          />
+          <Path
+            d="M100 80C88.9543 80 80 88.9543 80 100C80 111.046 88.9543 120 100 120C111.046 120 120 111.046 120 100C120 88.9543 111.046 80 100 80ZM100 100C100 100 100 100 100 100C100 100 100 100 100 100C100 100 100 100 100 100Z"
+            fill="#9CA3AF"
+          />
+        </Svg>
+      </View>
+      <Text className="mb-2 text-center text-xl font-semibold text-gray-900">
+        No Groceries Yet
+      </Text>
+      <Text className="text-center text-gray-500">
+        Add your first grocery item to get started
+      </Text>
+    </View>
+  );
+}
+
+// Update GroceryContent to show EmptyState when there are no items
 function GroceryContent({
   itemsByCategory,
   onToggle,
   onEdit,
   onDelete,
+  selectedMonth,
 }: {
   itemsByCategory: Record<string, GroceryItem[]>;
   onToggle: (id: string) => void;
   onEdit: (item: GroceryItem) => void;
   onDelete: (id: string) => void;
+  selectedMonth: string;
 }) {
-  const allItems = Object.values(itemsByCategory).flat();
+  // Filter items by selected month
+  const filteredItemsByCategory = Object.entries(itemsByCategory).reduce<
+    Record<string, GroceryItem[]>
+  >((acc, [category, items]) => {
+    const filteredItems = items.filter((item) =>
+      isSameMonth(item.date, selectedMonth)
+    );
+    if (filteredItems.length > 0) {
+      acc[category] = filteredItems;
+    }
+    return acc;
+  }, {});
+
+  const allItems = Object.values(filteredItemsByCategory).flat();
+
+  if (allItems.length === 0) {
+    return <EmptyState />;
+  }
 
   return (
     <ScrollView className="flex-1">
       <View className="px-4">
         <GrocerySummary items={allItems} />
 
-        {Object.entries(itemsByCategory).map(([category, categoryItems]) => (
-          <CategoryGroup
-            key={category}
-            category={category}
-            items={categoryItems}
-            onToggle={onToggle}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
-        ))}
+        {Object.entries(filteredItemsByCategory).map(
+          ([category, categoryItems]) => (
+            <CategoryGroup
+              key={category}
+              category={category}
+              items={categoryItems}
+              onToggle={onToggle}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          )
+        )}
       </View>
     </ScrollView>
   );
@@ -1157,7 +1261,7 @@ function GroceryModals({
   selectedMonth: string;
   onFormClose: () => void;
   onMonthSelectorClose: () => void;
-  onSubmit: (item: Omit<GroceryItem, 'id' | 'isChecked'>) => void;
+  onSubmit: (item: Omit<GroceryItem, 'id' | 'isChecked' | 'date'>) => void;
   onSelectMonth: (month: string) => void;
 }) {
   return (
@@ -1166,7 +1270,8 @@ function GroceryModals({
         isVisible={isFormOpen}
         onClose={onFormClose}
         onSubmit={onSubmit}
-        initialData={editingItem}
+        initialItem={editingItem}
+        isEditing={!!editingItem}
       />
 
       <MonthSelectorSheet
@@ -1216,7 +1321,7 @@ export default function Groceries() {
   }, []);
 
   const handleSubmit = useCallback(
-    (item: Omit<GroceryItem, 'id' | 'isChecked'>) => {
+    (item: Omit<GroceryItem, 'id' | 'isChecked' | 'date'>) => {
       if (editingItem) {
         handleEditItem(editingItem, item);
       } else {
@@ -1246,6 +1351,7 @@ export default function Groceries() {
         onToggle={handleToggleItem}
         onEdit={handleEdit}
         onDelete={handleDeleteItem}
+        selectedMonth={selectedMonth}
       />
 
       <GroceryModals
