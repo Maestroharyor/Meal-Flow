@@ -1,49 +1,51 @@
-<h1 align="center">
-  <img alt="logo" src="./assets/icon.png" width="124px" style="border-radius:10px"/><br/>
-Mobile App </h1>
+# **MealFlow – Smart Meal & Food Management**  
 
-> This Project is based on [Obytes starter](https://starter.obytes.com)
+A modern, mobile-first application for planning meals, managing recipes, and creating grocery lists.  
 
-## Requirements
+![MealFlow App](https://i.imgur.com/placeholder.jpg)  
 
-- [React Native dev environment ](https://reactnative.dev/docs/environment-setup)
-- [Node.js LTS release](https://nodejs.org/en/)
-- [Git](https://git-scm.com/)
-- [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall), required only for macOS or Linux users
-- [Pnpm](https://pnpm.io/installation)
-- [Cursor](https://www.cursor.com/) or [VS Code Editor](https://code.visualstudio.com/download) ⚠️ Make sure to install all recommended extension from `.vscode/extensions.json`
+## 🌟 **Features**  
 
-## 👋 Quick start
+- **Meal Planning** – Plan your breakfast, lunch, and dinner for each day of the week.  
+- **Recipe Management** – Save, edit, and organize your favorite recipes.  
+- **Recipe Discovery** – Explore new recipes from TheMealDB API.  
+- **Grocery List** – Create and manage shopping lists with categories and price tracking.  
+- **Multiple Month Support** – Plan for different months or time periods.  
+- **Dark Mode** – Toggle between light and dark themes.  
+- **Responsive Design** – Works seamlessly on iOS and Android.  
+- **Offline Support** – Access stored data without an internet connection.  
 
-Clone the repo to your machine and install deps :
+## 🚀 **Technologies & Packages**  
 
-```sh
-git clone https://github.com/user/repo-name
+- **React Native** – Cross-platform mobile development.  
+- **Expo** – Fast development & deployment.  
+- **TypeScript** – Type-safe development.  
+- **React Navigation** – Smooth and intuitive navigation.  
+- **Zustand** – Lightweight state management.  
+- **NativeWind** – Tailwind-like styling for React Native.  
+- **React Query** – Data fetching & caching.  
+- **MMKV Storage** – Fast local storage solution.  
+- **Firebase** – Authentication & real-time database support.  
+- **React Native Paper** – Beautiful pre-built UI components.  
 
-cd ./repo-name
+## 📋 **Prerequisites**  
 
-pnpm install
-```
+- Node.js 18.18.0 or higher.  
+- npm, yarn, or pnpm.  
+- Expo CLI installed globally.  
 
-To run the app on ios
+## 🔧 **Installation**  
 
-```sh
-pnpm ios
-```
-
-To run the app on Android
-
-```sh
-pnpm android
-```
-
-## ✍️ Documentation
-
-- [Rules and Conventions](https://starter.obytes.com/getting-started/rules-and-conventions/)
-- [Project structure](https://starter.obytes.com/getting-started/project-structure)
-- [Environment vars and config](https://starter.obytes.com/getting-started/environment-vars-config)
-- [UI and Theming](https://starter.obytes.com/ui-and-theme/ui-theming)
-- [Components](https://starter.obytes.com/ui-and-theme/components)
-- [Forms](https://starter.obytes.com/ui-and-theme/Forms)
-- [Data fetching](https://starter.obytes.com/guides/data-fetching)
-- [Contribute to starter](https://starter.obytes.com/how-to-contribute/)
+1. Clone the repository:  
+   ```bash
+   git clone https://github.com/yourusername/mealflow.git
+   cd mealflow
+   ```  
+2. Install dependencies:  
+   ```bash
+   npm install  
+   ```  
+3. Start the development server:  
+   ```bash
+   expo start  
+   ```  
