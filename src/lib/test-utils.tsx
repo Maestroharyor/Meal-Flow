@@ -1,39 +1,58 @@
-import '@shopify/flash-list/jestSetup';
-
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { NavigationContainer } from '@react-navigation/native';
-import type { RenderOptions } from '@testing-library/react-native';
-import { render, userEvent } from '@testing-library/react-native';
-import type { ReactElement } from 'react';
-import React from 'react';
+import { render, type RenderOptions } from '@testing-library/react-native';
+import { userEvent } from '@testing-library/user-event';
+import React, { type ReactElement } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-const createAppWrapper = () => {
-  return ({ children }: { children: React.ReactNode }) => (
-    <BottomSheetModalProvider>
-      <NavigationContainer>{children}</NavigationContainer>
-    </BottomSheetModalProvider>
+// Mock FocusAwareStatusBar
+jest.mock('@/components/ui/focus-aware-status-bar', () => ({
+  FocusAwareStatusBar: () => null,
+}));
+
+// Mock BottomSheet
+jest.mock('@gorhom/bottom-sheet', () => {
+  const { View } = require('react-native');
+  return {
+    ...jest.requireActual('@gorhom/bottom-sheet'),
+    BottomSheetModal: ({ children }: any) => <View>{children}</View>,
+    BottomSheetModalProvider: ({ children }: any) => <View>{children}</View>,
+    useBottomSheetModal: () => ({
+      present: jest.fn(),
+      dismiss: jest.fn(),
+    }),
+  };
+});
+
+// Mock Ionicons
+jest.mock('@expo/vector-icons', () => ({
+  Ionicons: 'Ionicons',
+}));
+
+function AllTheProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <NavigationContainer>
+      <SafeAreaProvider>
+        <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
+      </SafeAreaProvider>
+    </NavigationContainer>
   );
-};
+}
 
-const customRender = (
+function customRender(
   ui: ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>
-) => {
-  const Wrapper = createAppWrapper(); // make sure we have a new wrapper for each render
-  return render(ui, { wrapper: Wrapper, ...options });
-};
+) {
+  return render(ui, { wrapper: AllTheProviders, ...options });
+}
 
-// use this if you want to test user events
-export const setup = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>
-) => {
-  const Wrapper = createAppWrapper();
+// setup function that includes user-event
+function setup(jsx: ReactElement) {
   return {
     user: userEvent.setup(),
-    ...render(ui, { wrapper: Wrapper, ...options }),
+    ...customRender(jsx),
   };
-};
-
+}
+// re-export everything
 export * from '@testing-library/react-native';
-export { customRender as render };
+export { customRender as render, setup };
