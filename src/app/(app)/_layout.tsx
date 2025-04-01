@@ -1,13 +1,8 @@
 /* eslint-disable react/no-unstable-nested-components */
+import { Ionicons } from '@expo/vector-icons';
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
 
-import {
-  Groceries as GroceriesIcon,
-  Meals as MealsIcon,
-  Recipes as RecipesIcon,
-  Settings as SettingsIcon,
-} from '@/components/ui/icons';
 import { useAuth, useIsFirstTime } from '@/lib';
 
 // Define the routes explicitly - this helps with router config
@@ -33,7 +28,7 @@ function useSplashScreen(status: string) {
   }, [hideSplash, status]);
 }
 
-export default function TabLayout() {
+export default function AppLayout() {
   const status = useAuth.use.status();
   const [isFirstTime] = useIsFirstTime();
 
@@ -50,45 +45,45 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      initialRouteName="groceries"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#2FA45A', // Use primary.500 green color
+        tabBarActiveTintColor: '#22C55E',
       }}
     >
       <Tabs.Screen
         name="groceries"
         options={{
           title: 'Groceries',
-          tabBarIcon: ({ color }) => <GroceriesIcon color={color} />,
-          tabBarButtonTestID: 'groceries-tab',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="cart-outline" size={size} color={color} />
+          ),
         }}
       />
-
       <Tabs.Screen
         name="meals"
         options={{
           title: 'Meals',
-          tabBarIcon: ({ color }) => <MealsIcon color={color} />,
-          tabBarButtonTestID: 'meals-tab',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="restaurant-outline" size={size} color={color} />
+          ),
         }}
       />
-
       <Tabs.Screen
         name="recipes"
         options={{
           title: 'Recipes',
-          tabBarIcon: ({ color }) => <RecipesIcon color={color} />,
-          tabBarButtonTestID: 'recipes-tab',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="book-outline" size={size} color={color} />
+          ),
         }}
       />
-
       <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color }) => <SettingsIcon color={color} />,
-          tabBarButtonTestID: 'settings-tab',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings-outline" size={size} color={color} />
+          ),
         }}
       />
     </Tabs>
