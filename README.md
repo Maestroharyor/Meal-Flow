@@ -43,9 +43,72 @@ A modern, mobile-first application for planning meals, managing recipes, and cre
    ```  
 2. Install dependencies:  
    ```bash
-   npm install  
+   npm install
+   # or
+   yarn install
    ```  
-3. Start the development server:  
+3. Run the development server:  
    ```bash
-   expo start  
+   npm run dev
+   # or
+   yarn dev
    ```  
+4. Open the Expo Go app on your phone and scan the QR code, or run on a simulator/emulator.
+
+## 📱 **Usage**
+
+### Meal Planning
+
+- Navigate to the "Meals" tab
+- Tap on any empty meal slot to add a meal
+- Choose a recipe from your saved recipes or add a custom meal
+- View your weekly meal plan at a glance
+
+### Recipe Management
+
+- Go to the "Recipes" tab
+- Browse your saved recipes
+- Tap "New Recipe" to add a custom recipe
+- Tap on any recipe to view details, edit, or delete
+
+### Recipe Discovery
+
+- In the "Recipes" tab, switch to the "Explore" section
+- Search for recipes or browse random suggestions
+- Tap on a recipe to view details
+- Save interesting recipes to your collection
+
+### Grocery List
+
+- Navigate to the "Groceries" tab
+- Add items with optional price information
+- Organize items by category
+- Check off items as you shop
+
+### Month Management
+
+- Use the dropdown at the top to switch between months
+- Add new months for future planning
+- Set a default month that loads when you open the app
+
+## 🤝 **Contributing**
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 **License**
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 **Acknowledgements**
+
+- **TheMealDB** for their free recipe API
+- **Expo** for the amazing React Native development platform
+- **React Native Community** for the excellent libraries and support
+
+Made with ❤️ for my wife by [Ayomide Odewale](https://www.ayomideodewale.com)
