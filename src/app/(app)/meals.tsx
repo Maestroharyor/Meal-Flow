@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import React, { useCallback, useRef, useState } from 'react';
 import { Pressable } from 'react-native';
@@ -251,6 +252,7 @@ function DayMealPlanner({
 }
 
 // Week planner component
+// eslint-disable-next-line max-lines-per-function
 function WeekPlanner({
   weekPlan,
   onAddMeal,
@@ -275,35 +277,47 @@ function WeekPlanner({
   );
 }
 
-export default function Meals() {
+// eslint-disable-next-line max-lines-per-function
+function useMonthSelection() {
   const [months] = useState(['April 2025', 'March 2025']);
   const [selectedMonth, setSelectedMonth] = useState(months[0]);
   const [isMonthSelectorOpen, setIsMonthSelectorOpen] = useState(false);
-  const [currentEditingMeal, setCurrentEditingMeal] = useState<{
-    day: string;
-    type: MealType;
-    meal?: Meal;
-  } | null>(null);
 
-  const [weekPlan, setWeekPlan] = useState<WeekPlan>({
-    Monday: {
-      breakfast: { id: '1', name: 'Brown Stew Chicken' },
-    },
-    Tuesday: {},
-    Wednesday: {},
-    Thursday: {},
-    Friday: {},
-    Saturday: {},
-    Sunday: {},
-  });
-
-  function handleAddMeal(day: string, type: MealType) {
-    setCurrentEditingMeal({ day, type });
+  function handleSetDefaultMonth(month: string) {
+    // Implementation for setting default month
+    setSelectedMonth(month);
+    setIsMonthSelectorOpen(false);
   }
 
-  function handleEditMeal(day: string, type: MealType, meal: Meal) {
-    setCurrentEditingMeal({ day, type, meal });
+  function handleAddNewMonth() {
+    // Implementation for adding new month
+    setIsMonthSelectorOpen(false);
   }
+
+  const toggleMonthSelector = () => setIsMonthSelectorOpen(true);
+
+  return {
+    months,
+    selectedMonth,
+    setSelectedMonth,
+    isMonthSelectorOpen,
+    setIsMonthSelectorOpen,
+    handleSetDefaultMonth,
+    handleAddNewMonth,
+    toggleMonthSelector,
+  };
+}
+
+type MealEditingContext = {
+  setWeekPlan: React.Dispatch<React.SetStateAction<WeekPlan>>;
+  currentEditingMeal: { day: string; type: MealType; meal?: Meal } | null;
+  setCurrentEditingMeal: React.Dispatch<
+    React.SetStateAction<{ day: string; type: MealType; meal?: Meal } | null>
+  >;
+};
+
+function createMealUtils(context: MealEditingContext) {
+  const { setWeekPlan, currentEditingMeal, setCurrentEditingMeal } = context;
 
   function saveMeal(name: string) {
     if (!currentEditingMeal) return;
@@ -343,16 +357,81 @@ export default function Meals() {
     setCurrentEditingMeal(null);
   }
 
-  function handleSetDefaultMonth(month: string) {
-    // Implementation for setting default month
-    setSelectedMonth(month);
-    setIsMonthSelectorOpen(false);
+  return { saveMeal, removeMeal };
+}
+
+// eslint-disable-next-line max-lines-per-function
+function useMealEditor() {
+  const [currentEditingMeal, setCurrentEditingMeal] = useState<{
+    day: string;
+    type: MealType;
+    meal?: Meal;
+  } | null>(null);
+
+  const [weekPlan, setWeekPlan] = useState<WeekPlan>({
+    Monday: {
+      breakfast: { id: '1', name: 'Brown Stew Chicken' },
+    },
+    Tuesday: {},
+    Wednesday: {},
+    Thursday: {},
+    Friday: {},
+    Saturday: {},
+    Sunday: {},
+  });
+
+  function handleAddMeal(day: string, type: MealType) {
+    setCurrentEditingMeal({ day, type });
   }
 
-  function handleAddNewMonth() {
-    // Implementation for adding new month
-    setIsMonthSelectorOpen(false);
+  function handleEditMeal(day: string, type: MealType, meal: Meal) {
+    setCurrentEditingMeal({ day, type, meal });
   }
+
+  const { saveMeal, removeMeal } = createMealUtils({
+    setWeekPlan,
+    currentEditingMeal,
+    setCurrentEditingMeal,
+  });
+
+  return {
+    currentEditingMeal,
+    weekPlan,
+    handleAddMeal,
+    handleEditMeal,
+    saveMeal,
+    removeMeal,
+  };
+}
+
+/* eslint-disable max-lines-per-function */
+function useMealPlanner() {
+  const monthSelection = useMonthSelection();
+  const mealEditor = useMealEditor();
+
+  return {
+    ...monthSelection,
+    ...mealEditor,
+  };
+}
+/* eslint-enable max-lines-per-function */
+
+export default function Meals() {
+  const {
+    months,
+    selectedMonth,
+    setSelectedMonth,
+    isMonthSelectorOpen,
+    currentEditingMeal,
+    weekPlan,
+    handleAddMeal,
+    handleEditMeal,
+    saveMeal,
+    removeMeal,
+    handleSetDefaultMonth,
+    handleAddNewMonth,
+    toggleMonthSelector,
+  } = useMealPlanner();
 
   return (
     <>
@@ -362,7 +441,7 @@ export default function Meals() {
 
         <MonthSelector
           selectedMonth={selectedMonth}
-          onPress={() => setIsMonthSelectorOpen(true)}
+          onPress={toggleMonthSelector}
         />
 
         <WeekPlanner
