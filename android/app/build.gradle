@@ -86,9 +86,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.myexpo_ownerapp_development'
+    namespace 'com.mealflow.app_development'
     defaultConfig {
-        applicationId 'com.myexpo_ownerapp_development'
+        applicationId 'com.mealflow.app_development'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

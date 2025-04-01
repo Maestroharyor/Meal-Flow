@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "MyexpoownerApp.app"
-               BlueprintName = "MyexpoownerApp"
-               ReferencedContainer = "container:MyexpoownerApp.xcodeproj">
+               BuildableName = "MealFlow.app"
+               BlueprintName = "MealFlow"
+               ReferencedContainer = "container:MealFlow.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "MyexpoownerAppTests.xctest"
-               BlueprintName = "MyexpoownerAppTests"
-               ReferencedContainer = "container:MyexpoownerApp.xcodeproj">
+               BuildableName = "MealFlowTests.xctest"
+               BlueprintName = "MealFlowTests"
+               ReferencedContainer = "container:MealFlow.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "MyexpoownerApp.app"
-            BlueprintName = "MyexpoownerApp"
-            ReferencedContainer = "container:MyexpoownerApp.xcodeproj">
+            BuildableName = "MealFlow.app"
+            BlueprintName = "MealFlow"
+            ReferencedContainer = "container:MealFlow.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "MyexpoownerApp.app"
-            BlueprintName = "MyexpoownerApp"
-            ReferencedContainer = "container:MyexpoownerApp.xcodeproj">
+            BuildableName = "MealFlow.app"
+            BlueprintName = "MealFlow"
+            ReferencedContainer = "container:MealFlow.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

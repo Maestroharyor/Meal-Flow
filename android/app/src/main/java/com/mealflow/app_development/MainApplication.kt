@@ -1,4 +1,4 @@
-package com.myexpo_ownerapp_development
+package com.mealflow.app_development
 
 import android.app.Application
 import android.content.res.Configuration

@@ -1,4 +1,4 @@
-package com.myexpo_ownerapp_development
+package com.mealflow.app_development
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

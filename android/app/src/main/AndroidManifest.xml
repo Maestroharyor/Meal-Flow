@@ -24,9 +24,9 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="Myexpo-ownerApp"/>
-        <data android:scheme="com.myexpo_ownerapp_development"/>
-        <data android:scheme="exp+obytesapp"/>
+        <data android:scheme="mealflow"/>
+        <data android:scheme="com.mealflow.app_development"/>
+        <data android:scheme="exp+mealflow"/>
       </intent-filter>
     </activity>
   </application>

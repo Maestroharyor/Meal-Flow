@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'Myexpo-ownerApp'
+rootProject.name = 'MealFlow'
 
 dependencyResolutionManagement {
   versionCatalogs {
