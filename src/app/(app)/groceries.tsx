@@ -1044,37 +1044,6 @@ function GroceryFormSheet({
   );
 }
 
-function GroceryList({
-  itemsByCategory,
-  onToggle,
-  onEdit,
-  onDelete,
-}: {
-  itemsByCategory: Record<string, GroceryItem[]>;
-  onToggle: (id: string) => void;
-  onEdit: (item: GroceryItem) => void;
-  onDelete: (id: string) => void;
-}) {
-  const allItems = Object.values(itemsByCategory).flat();
-
-  return (
-    <ScrollView className="flex-1 px-5">
-      <GrocerySummary items={allItems} />
-
-      {Object.entries(itemsByCategory).map(([category, categoryItems]) => (
-        <CategoryGroup
-          key={category}
-          category={category}
-          items={categoryItems}
-          onToggle={onToggle}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
-      ))}
-    </ScrollView>
-  );
-}
-
 function useGroceryItems() {
   const [items, setItems] = useState<GroceryItem[]>(INITIAL_ITEMS);
 
@@ -1137,6 +1106,80 @@ function useGroceryItems() {
   };
 }
 
+// Split out the content section to reduce the main component's line count
+function GroceryContent({
+  itemsByCategory,
+  onToggle,
+  onEdit,
+  onDelete,
+}: {
+  itemsByCategory: Record<string, GroceryItem[]>;
+  onToggle: (id: string) => void;
+  onEdit: (item: GroceryItem) => void;
+  onDelete: (id: string) => void;
+}) {
+  const allItems = Object.values(itemsByCategory).flat();
+
+  return (
+    <ScrollView className="flex-1">
+      <View className="px-4">
+        <GrocerySummary items={allItems} />
+
+        {Object.entries(itemsByCategory).map(([category, categoryItems]) => (
+          <CategoryGroup
+            key={category}
+            category={category}
+            items={categoryItems}
+            onToggle={onToggle}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        ))}
+      </View>
+    </ScrollView>
+  );
+}
+
+// Extract modal rendering to reduce main component line count
+function GroceryModals({
+  isFormOpen,
+  isMonthSelectorOpen,
+  editingItem,
+  selectedMonth,
+  onFormClose,
+  onMonthSelectorClose,
+  onSubmit,
+  onSelectMonth,
+}: {
+  isFormOpen: boolean;
+  isMonthSelectorOpen: boolean;
+  editingItem: GroceryItem | undefined;
+  selectedMonth: string;
+  onFormClose: () => void;
+  onMonthSelectorClose: () => void;
+  onSubmit: (item: Omit<GroceryItem, 'id' | 'isChecked'>) => void;
+  onSelectMonth: (month: string) => void;
+}) {
+  return (
+    <>
+      <GroceryFormSheet
+        isVisible={isFormOpen}
+        onClose={onFormClose}
+        onSubmit={onSubmit}
+        initialData={editingItem}
+      />
+
+      <MonthSelectorSheet
+        isVisible={isMonthSelectorOpen}
+        onClose={onMonthSelectorClose}
+        onSelect={onSelectMonth}
+        selectedMonth={selectedMonth}
+      />
+    </>
+  );
+}
+
+// eslint-disable-next-line max-lines-per-function
 export default function Groceries() {
   const {
     items,
@@ -1167,42 +1210,53 @@ export default function Groceries() {
     setIsFormOpen(true);
   }, []);
 
+  const handleFormClose = useCallback(() => {
+    setIsFormOpen(false);
+    setEditingItem(undefined);
+  }, []);
+
+  const handleSubmit = useCallback(
+    (item: Omit<GroceryItem, 'id' | 'isChecked'>) => {
+      if (editingItem) {
+        handleEditItem(editingItem, item);
+      } else {
+        handleAddItem(item);
+      }
+    },
+    [editingItem, handleAddItem, handleEditItem]
+  );
+
   return (
     <View className="flex-1 bg-white">
       <FocusAwareStatusBar />
-      <Header />
-      <MonthSelector
-        selectedMonth={selectedMonth}
-        onPress={() => setIsMonthSelectorOpen(true)}
-      />
-      <AddItemButton onPress={() => setIsFormOpen(true)} />
 
-      <GroceryList
+      {/* Fixed header section */}
+      <View className="bg-white">
+        <Header />
+        <MonthSelector
+          selectedMonth={selectedMonth}
+          onPress={() => setIsMonthSelectorOpen(true)}
+        />
+        <AddItemButton onPress={() => setIsFormOpen(true)} />
+      </View>
+
+      {/* Scrollable content */}
+      <GroceryContent
         itemsByCategory={itemsByCategory}
         onToggle={handleToggleItem}
         onEdit={handleEdit}
         onDelete={handleDeleteItem}
       />
 
-      <GroceryFormSheet
-        isVisible={isFormOpen}
-        onClose={() => {
-          setIsFormOpen(false);
-          setEditingItem(undefined);
-        }}
-        onSubmit={
-          editingItem
-            ? (item) => handleEditItem(editingItem, item)
-            : handleAddItem
-        }
-        initialData={editingItem}
-      />
-
-      <MonthSelectorSheet
-        isVisible={isMonthSelectorOpen}
-        onClose={() => setIsMonthSelectorOpen(false)}
-        onSelect={setSelectedMonth}
+      <GroceryModals
+        isFormOpen={isFormOpen}
+        isMonthSelectorOpen={isMonthSelectorOpen}
+        editingItem={editingItem}
         selectedMonth={selectedMonth}
+        onFormClose={handleFormClose}
+        onMonthSelectorClose={() => setIsMonthSelectorOpen(false)}
+        onSubmit={handleSubmit}
+        onSelectMonth={setSelectedMonth}
       />
     </View>
   );
