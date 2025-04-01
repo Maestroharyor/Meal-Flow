@@ -744,7 +744,7 @@ function GrocerySummary({ items }: { items: GroceryItem[] }) {
     totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
 
   return (
-    <View className="mx-4 mb-6 mt-2 rounded-xl bg-primary-50 p-4 shadow-sm">
+    <View className="mb-6 mt-2 rounded-xl bg-primary-50 p-4 shadow-sm">
       <View className="flex-row items-center justify-between">
         <View>
           <Text className="text-sm font-medium text-primary-700">Items</Text>
@@ -1058,7 +1058,7 @@ function GroceryList({
   const allItems = Object.values(itemsByCategory).flat();
 
   return (
-    <ScrollView className="flex-1">
+    <ScrollView className="flex-1 px-5">
       <GrocerySummary items={allItems} />
 
       {Object.entries(itemsByCategory).map(([category, categoryItems]) => (
